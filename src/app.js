@@ -17,9 +17,15 @@ const morganOption = (NODE_ENV === 'production')
 app.use(morgan(morganOption))
 app.use(helmet())
 app.use(cors())
+app.use(function errorHandler(error, req, res, next) {
+         let response
+         if (process.env.NODE_ENV === 'production') {
+           response = { error: { message: 'server error' } }
+         } else {
+           console.error(error)
+           response = { message: error.message, error }
+         }
+         res.status(500).json(response)
+       })
 
-
-module.exports = {
-    PORT: process.env.PORT || 8000,
-    NODE_ENV: process.env.NODE_ENV || 'development',
-  }
+module.exports = app
